@@ -1,25 +1,23 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store'
 
 Vue.use(Router)
 
 export default new Router({
 	routes: [{
-		path: '/',
+		path: '/players',
 		name: 'PlayersList',
-		meta: { back: null },
 		component: () => import('./views/player/List')
 	},
 	{
 		path: '/players/create',
 		name: 'CreatePlayer',
-		meta: { back: 'PlayersList' },
 		component: () => import('./views/player/Create')
 	},
 	{
 		path: '/players/:id/edit',
 		name: 'PlayerEdit',
-		meta: { back: 'PlayersList' },
 		component: () => import('./views/player/Edit')
 	},
 	{
@@ -70,7 +68,6 @@ export default new Router({
 	{
 		path: '/fees',
 		name: 'FeeList',
-		meta: { back: null },
 		component: () => import('./views/fees/List'),
 		children: [{
 			path: ':id/edit',
@@ -81,43 +78,45 @@ export default new Router({
 	{
 		path: '/debit',
 		name: 'DebitList',
-		meta: { back: null },
 		component: () => import('./views/debit/List')
 	},
 	{
-		path: '/invoices',
+		path: '/',
 		name: 'InvoiceList',
-		meta: { back: null },
-		component: () => import('./views/invoices/List')
+		component: () => import('./views/invoices/List'),
+		beforeEnter: (to, from, next) => {
+			console.log(to)
+			store.dispatch('SELECT_INVOICES').then(next)
+		},
+		children: [{
+			path: '/invoices/:invoice/due/:due/edit',
+			name: 'InvoiceDueEdit',
+			component: () => import('./views/invoices/EditDue')
+		}]
 	},
 	{
 		path: '/invoices/create',
 		name: 'CreateInvoice',
-		meta: { back: 'InvoiceList' },
 		component: () => import('./views/invoices/Create')
 	},
 	{
 		path: '/invoices/:id/edit',
 		name: 'InvoiceEdit',
-		meta: { back: 'InvoiceList' },
 		component: () => import('./views/invoices/Edit')
 	},
 	{
 		path: '/expenses',
 		name: 'ExpenseList',
-		meta: { back: null },
 		component: () => import('./views/expenses/List')
 	},
 	{
 		path: '/expenses/create',
 		name: 'CreateExpense',
-		meta: { back: 'ExpenseList' },
 		component: () => import('./views/expenses/Create')
 	},
 	{
 		path: '/expenses/:id/edit',
 		name: 'ExpenseEdit',
-		meta: { back: 'ExpenseList' },
 		component: () => import('./views/expenses/Edit')
 	}]
 })

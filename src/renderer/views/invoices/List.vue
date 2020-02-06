@@ -16,23 +16,66 @@
 				<table class="table table-hover">
 					<thead class="thead-light">
 						<tr>
-							<th class="text-center" scope="col">Referencia</th>
-							<th class="text-center" scope="col">Titulo</th>
-							<th class="text-center" scope="col">Monto</th>
-							<th class="text-center" scope="col">Fecha</th>
+							<th class="" scope="col">Referencia</th>
+							<th class="" scope="col">Titulo</th>
+							<th class="" scope="col">Fecha</th>
+							<th class="" scope="col">Monto</th>
 							<th scope="col">&nbsp;</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="item in invoices">
-							<td class="py-1 align-middle text-center">{{item.ref}}</td>
-							<td class="py-1 align-middle text-center">{{item.subject}}</td>
-							<td class="py-1 align-middle text-center">{{item.amount}}</td>
-							<td class="py-1 align-middle text-center">{{item.date.toLocaleDateString()}}</td>
-							<td class="py-1 align-middle text-right">
-								<button type="button" class="btn btn-primary btn-sm" @click.prevent="$router.push({ name: 'InvoiceEdit', params: { id: item.id } })">Editar</button>
-								<button type="button" class="btn btn-danger btn-sm" @click.prevent="$store.dispatch('DELETE_INVOICE', item.id)">Eliminar</button>
-							</td>
+						<template v-for="invoice in invoices">
+							<tr>
+								<td class="py-1 align-middle">{{invoice.ref}}</td>
+								<td class="py-1 align-middle">{{invoice.subject}}</td>
+								<td class="py-1 align-middle">{{invoice.date.toLocaleDateString()}}</td>
+								<td class="py-1 align-middle">$ {{invoice.amount}}</td>
+								<td class="py-1 align-middle text-right">
+									<button class="icon btn btn-sm" @click.prevent="(index => index >= 0 ? dues.splice(index, 1) : dues.push(invoice.id))(dues.indexOf(invoice.id))" v-if="invoice.dues.length">
+										<i class="fe" :class="dues.indexOf(invoice.id) >= 0 ? 'fe-chevrons-up': 'fe-chevrons-down'"></i>
+									</button>
+									<button class="icon btn btn-sm" title="Editar" @click.prevent="$router.push({ name: 'InvoiceEdit', params: { id: invoice.id } })">
+										<i class="fe fe-edit"></i>
+									</button>
+									<button class="icon btn btn-sm" @click.prevent="$store.dispatch('DELETE_INVOICE', invoice.id)">
+										<i class="fe fe-trash"></i>
+									</button>
+								</td>
+							</tr>
+							<template v-if="invoice.dues.length && dues.find(id => id == invoice.id)">
+								<tr v-for="(due, i) in invoice.dues" class="table-secondary">
+									<td colspan="2" class="py-1 align-middle border-0">{{due.subject || 'Cuota ' + (i+1)}}</td>
+									<td class="py-1 align-middle border-0">Vto: {{due.expiration.toLocaleDateString()}}</td>
+									<td class="py-1 align-middle border-0">$ {{due.amount}}</td>
+									<td class="py-1 align-middle border-0 text-right">
+										<button class="icon btn btn-sm" title="Pagar" @click.prevent="pay(due)" v-if="due.status != 'paid'">
+											<i class="fe fe-circle"></i>
+										</button>
+										<button class="icon btn btn-sm" title="Marcar como no pagado" @click.prevent="unpay(due)" v-if="due.status == 'paid'">
+											<i class="fe fe-check-circle"></i>
+										</button>
+										<button class="icon btn btn-sm" title="Editar" @click.prevent="$router.push({ name: 'InvoiceDueEdit', params: { invoice: invoice.id, due: due.id } })">
+											<i class="fe fe-edit"></i>
+										</button>
+										<button class="icon btn btn-sm" @click.prevent="$store.dispatch('DELETE_DUE', due.id)">
+											<i class="fe fe-trash"></i>
+										</button>
+									</td>
+								</tr>
+								<tr class="table-warning">
+									<td colspan="3" class="py-1 align-middle border-0">Resta pagar: </td>
+									<td colspan="2" class="py-1 align-middle border-0"><strong>$ {{invoice.dues.reduce((a, b) => b.status == 'paid' ? a - parseInt(b.amount) : a, invoice.amount)}}</strong></td>
+								</tr>
+							</template>
+						</template>
+						<tr class="table-info">
+							<td colspan="3" class="py-1 align-middle border-0">Total: </td>
+							<!-- <td colspan="2" class="py-1 align-middle border-0"><strong>$ {{invoices.reduce((a, b) => a + parseInt(b.amount) - (b.dues || []).reduce((c,d) => d.status == 'paid' ? c + parseInt(d.amount) : c, 0), 0)}}</strong></td> -->
+							<td colspan="2" class="py-1 align-middle border-0"><strong>$ {{invoices.reduce((a, b) => a + parseInt(b.amount), 0)}}</strong></td>
+						</tr>
+						<tr class="table-info">
+							<td colspan="3" class="py-1 align-middle border-0">Total: </td>
+							<td colspan="2" class="py-1 align-middle border-0"><strong>$ {{invoices.reduce((a, b) => a + parseInt(b.amount), 0)}} {{invoices.reduce((a, b) => a + (b.dues || []).reduce((c,d) => d.status != 'paid' ? c + parseInt(d.amount) : c, 0), 0)}}</strong></td>
 						</tr>
 					</tbody>
 				</table>
@@ -46,16 +89,27 @@
 	export default {
 		data() {
 			return {
+				dues: [],
 				date_a: null,
 				date_b: null,
 				search: ''
 			}
 		},
 		computed: {
+			total() {
+				return this.$store.state.invoices.reduce((a, b) => a + parseInt(b.amount), 0)
+			},
 			invoices() {
 				return this.$store.state.invoices.filter(p => this.search ? Object.values(p).some(v => typeof v == 'string' && v.toLowerCase().indexOf(this.search.toLowerCase()) >= 0) : 1)
 			}
 		},
-		beforeCreate() { this.$store.dispatch('SELECT_INVOICES') }
+		methods: {
+			pay(due) {
+				this.$store.dispatch('UPDATE_INVOICE_DUE', { id: due.id, data: { status: 'paid', date: new Date() } }).then(this.close)
+			},
+			unpay(due) {
+				this.$store.dispatch('UPDATE_INVOICE_DUE', { id: due.id, data: { status: 'unpaid', date: null } }).then(this.close)
+			}
+		}
 	}
 </script>

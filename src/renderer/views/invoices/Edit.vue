@@ -18,7 +18,7 @@
 					<label>Monto</label>
 					<input type="text" class="form-control" v-model="model.amount">
 				</div>
-				<div class="form-group col-12">
+				<div class="form-group col-12" v-if="model.notes !== null">
 					<label for="exampleFormControlTextarea1">Notas</label>
 					<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="resize: none;" v-model="model.notes"></textarea>
 				</div>

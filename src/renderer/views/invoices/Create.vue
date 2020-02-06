@@ -39,13 +39,14 @@
 						<span class="input-icon-addon">
 							<i class="fe fe-calendar"></i>
 						</span>
-						<v-date-picker ref="date" mode="single" v-model="due.estimated_date" :input-props="{class: 'form-control form-control-sm'}" :disabled-dates="{end : new Date()}"/>
+						<v-date-picker ref="date" mode="single" v-model="due.expiration" :input-props="{class: 'form-control form-control-sm'}" :disabled-dates="{end : new Date()}"/>
 					</div>
 				</div>
 			</div>
-			<button class="btn btn-outline-secondary" @click.prevent="dues.push({ amount: null, estimated_date: null })">Agegar cuota</button>
+			<button class="btn btn-outline-secondary" @click.prevent="dues.push({ amount: null, expiration: null })">Agegar cuota</button>
 			<button class="btn btn-outline-secondary" v-if="notes === null" @click.prevent="notes = ''">Agegar notas</button>
 			<button class="btn btn-primary" type="submit">Guardar</button>
+			<button class="btn btn-gray" type="submit" @click.prevent="$router.push({ name: 'InvoiceList' })">Cancelar</button>
 		</form>
 	</div>
 </template>

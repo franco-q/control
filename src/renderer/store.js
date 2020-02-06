@@ -332,13 +332,21 @@ var Store = new Vuex.Store({
 		},
 		SELECT_INVOICES({ commit }, payload) {
 			return new Promise((resolve, reject) => {
-				db.query('SELECT * FROM invoices WHERE deleted_at IS NULL', (err, res) => {
+				db.query('SELECT * FROM invoices WHERE deleted_at IS NULL', (err, invoices) => {
 					if (err) {
 						handleError(err, reject)
 					}
 					else {
-						commit('SET_INVOICES', res)
-						resolve(res)
+						db.query('SELECT * FROM invoices_dues WHERE deleted_at IS NULL', (err, dues) => {
+							if (err) {
+								handleError(err, reject)
+							}
+							else {
+								var res = invoices.map(i => ({ ...i, dues: dues.filter(d => d.invoice_id == i.id) }))
+								commit('SET_INVOICES', res)
+								resolve(res)
+							}
+						})
 					}
 				})
 			})
@@ -450,14 +458,14 @@ var Store = new Vuex.Store({
 		},
 		UPDATE_EXPENSE({ state, commit }, { id, data }) {
 			return new Promise((resolve, reject) => {
-				db.query('UPDATE expenses SET ? WHERE id = ?', [data, id], (err, signings) => {
+				db.query('UPDATE expenses SET ? WHERE id = ?', [data, id], (err, expenses) => {
 					if (err) {
 						handleError(err, reject)
 					}
 					else {
-						sa('Guardado con exito', 'Se actualizo el registro en la tabla entradas', 'success')
-						commit('SET_EXPENSES', state.players.map(p => p.id == id ? { ...p, signings } : p))
-						resolve(signings)
+						sa('Guardado con exito', 'Se actualizo el registro en la tabla salidas', 'success')
+						commit('SET_EXPENSES', state.players.map(p => p.id == id ? { ...p, expenses } : p))
+						resolve(expenses)
 					}
 				})
 			})
@@ -472,11 +480,25 @@ var Store = new Vuex.Store({
 								handleError(err, reject)
 							}
 							else {
-								sa('Se elimino el registro.', 'Eliminado de la tabla entradas', 'success')
+								sa('Se elimino el registro.', 'Eliminado de la tabla salidas', 'success')
 								dispatch('SELECT_EXPENSES')
 								resolve(res)
 							}
 						})
+					}
+				})
+			})
+		},
+		UPDATE_INVOICE_DUE({ state, dispatch }, { id, data }) {
+			return new Promise((resolve, reject) => {
+				db.query('UPDATE invoices_dues SET ? WHERE id = ?', [data, id], err => {
+					if (err) {
+						handleError(err, reject)
+					}
+					else {
+						sa('Guardado con exito', 'Se actualizo el registro en la tabla entradas', 'success')
+						dispatch('SELECT_INVOICES')
+						resolve()
 					}
 				})
 			})
