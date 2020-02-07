@@ -221,9 +221,6 @@
 				authorized: null
 			}
 		},
-		beforeCreate() {
-			this.$store.dispatch('GET_PLAYER_DATA', this.$route.params.id).then(data => this.$store.commit('SET_PLAYERS', this.$store.state.players.filter(p => p.id != data.id).concat([data])))
-		},
 		computed: {
 			player() {
 				var player = this.$store.state.players.find(p => p.id == this.$route.params.id)

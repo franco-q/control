@@ -7,17 +7,39 @@ import router from './router'
 Vue.use(Vuex)
 
 const db = mysql.createConnection({
-	host: 'localhost',
-	user: 'root',
-	password: '',
-	database: 'lab'
+	host: 'remotemysql.com',
+	user: 'tkrs9qZdK0',
+	password: 'kuRj1f8xbO',
+	database: 'tkrs9qZdK0'
+})
+
+db.connect(function(err) {
+    if (err) {
+    	throw err
+    }
+    console.log('connected!')
 })
 
 var handleError = (err, reject) => {
-	sa(err.sqlMessage, err.code, 'error')
+	// sa(err.sqlMessage, err.code, 'error')
 	console.log([err])
 	reject(err)
 }
+
+var query = q => new Promise((resolve, reject) => {
+	db.query(q, (err, res) => {
+		console.log(err, res)
+
+		if (err) {
+			// sa(err.sqlMessage, err.code, 'error')
+			console.log([err])
+			reject(err)
+		}
+		else {
+			resolve(res)
+		}
+	})
+})
 
 var Store = new Vuex.Store({
 	state: {
@@ -51,14 +73,7 @@ var Store = new Vuex.Store({
 	actions: {
 		UPDATE_RATE_PLAYER({ state, commit }, { id, data }) {
 			return new Promise((resolve, reject) => {
-				db.query('UPDATE rates SET ? WHERE id = ?', [data, id], (err, res) => {
-					if (err) {
-						handleError(err, reject)
-					}
-					else {
-						resolve(res)
-					}
-				})
+				query(mysql.format('UPDATE rates SET ? WHERE id = ?', [data, id])).then(resolve).catch(reject)
 			})
 		},
 		UPDATE_SUBSCRIPTION_PLAYER({ state, commit }, { id, data }) {
@@ -330,25 +345,19 @@ var Store = new Vuex.Store({
 				})
 			})
 		},
-		SELECT_INVOICES({ commit }, payload) {
+		SELECT_INVOICES({ commit }) {
 			return new Promise((resolve, reject) => {
-				db.query('SELECT * FROM invoices WHERE deleted_at IS NULL', (err, invoices) => {
-					if (err) {
-						handleError(err, reject)
-					}
-					else {
-						db.query('SELECT * FROM invoices_dues WHERE deleted_at IS NULL', (err, dues) => {
-							if (err) {
-								handleError(err, reject)
-							}
-							else {
-								var res = invoices.map(i => ({ ...i, dues: dues.filter(d => d.invoice_id == i.id) }))
-								commit('SET_INVOICES', res)
-								resolve(res)
-							}
-						})
-					}
+				query('SELECT * FROM invoices WHERE deleted_at IS NULL')
+				.then(invoices => {
+					query('SELECT * FROM invoices_dues WHERE deleted_at IS NULL')
+					.then(dues => {
+						var res = invoices.map(i => ({ ...i, dues: dues.filter(d => d.invoice_id == i.id) }))
+						commit('SET_INVOICES', res)
+						resolve(res)
+					})
+					.catch(reject)
 				})
+				.catch(reject)
 			})
 		},
 		CREATE_INVOICE({ dispatch }, { date, ref, subject, amount, notes, dues }) {
@@ -489,17 +498,55 @@ var Store = new Vuex.Store({
 				})
 			})
 		},
-		UPDATE_INVOICE_DUE({ state, dispatch }, { id, data }) {
+		PAY_INVOICE_DUE({ state, dispatch }, { id, invoice_id }) {
 			return new Promise((resolve, reject) => {
-				db.query('UPDATE invoices_dues SET ? WHERE id = ?', [data, id], err => {
+				db.beginTransaction(err => {
 					if (err) {
 						handleError(err, reject)
 					}
-					else {
-						sa('Guardado con exito', 'Se actualizo el registro en la tabla entradas', 'success')
-						dispatch('SELECT_INVOICES')
-						resolve()
+					db.query('CALL PAY_INVOICE_DUE(?, ?)', [id, invoice_id], err => {
+						if (err) {
+							db.rollback(() => handleError(err, reject))
+						}
+						else {
+							db.commit(err => {
+								if (err) {
+									db.rollback(() => handleError(err, reject))
+								}
+								else {
+									sa('Guardado con exito', 'Se actualizo el registro en la tabla entradas', 'success')
+									dispatch('SELECT_INVOICES')
+									resolve()
+								}
+							})
+						}
+					})
+				})
+			})
+		},
+		UNPAY_INVOICE_DUE({ state, dispatch }, { id, invoice_id }) {
+			return new Promise((resolve, reject) => {
+				db.beginTransaction(err => {
+					if (err) {
+						handleError(err, reject)
 					}
+					db.query('CALL UNPAY_INVOICE_DUE(?, ?)', [id, invoice_id], err => {
+						if (err) {
+							db.rollback(() => handleError(err, reject))
+						}
+						else {
+							db.commit(err => {
+								if (err) {
+									db.rollback(() => handleError(err, reject))
+								}
+								else {
+									sa('Guardado con exito', 'Se actualizo el registro en la tabla entradas', 'success')
+									dispatch('SELECT_INVOICES')
+									resolve()
+								}
+							})
+						}
+					})
 				})
 			})
 		}

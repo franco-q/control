@@ -24,6 +24,13 @@ export default new Router({
 		path: '/players/:id',
 		name: 'PlayerView',
 		component: () => import('./views/player/View'),
+		beforeEnter: (to, from, next) => {
+			store.dispatch('GET_PLAYER_DATA', to.params.id)
+			.then(data => {
+				store.commit('SET_PLAYERS', store.state.players.filter(p => p.id != data.id).concat([data]))
+				next()
+			})
+		},
 		children: [{
 			path: 'membership/new',
 			name: 'UpMembershipForm',
@@ -85,7 +92,6 @@ export default new Router({
 		name: 'InvoiceList',
 		component: () => import('./views/invoices/List'),
 		beforeEnter: (to, from, next) => {
-			console.log(to)
 			store.dispatch('SELECT_INVOICES').then(next)
 		},
 		children: [{
