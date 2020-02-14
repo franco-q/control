@@ -1,5 +1,5 @@
 <template>
-	<div class="pb-2 mb-3">
+	<div>
 		<nav class="navbar fixed-top flex-md-nowrap p-0 shadow w-100">
 			<div class="col-md-2 mr-0 d-none d-sm-block p-1">
 				<router-link :to="{name: 'CreatePlayer'}" class="btn btn-block"><i class="fe fe-edit mr-2"></i>Nuevo</router-link>
@@ -22,7 +22,7 @@
 					<tbody>
 						<tr v-for="player in $store.state.players.filter(p => search ? Object.values(p).some(v => typeof v == 'string' && v.toLowerCase().indexOf(search.toLowerCase()) >= 0) : 1)">
 							<td class="py-1 align-middle">{{player.lastname}} {{player.name}}</td>
-							<td class="py-1 align-middle">{{player.born_date.toLocaleDateString()}}</td>
+							<td class="py-1 align-middle">{{player.born_date?player.born_date.toLocaleDateString():''}}</td>
 							<!-- <td class="py-1 align-middle">{{player.sport}}</td> -->
 							<td class="py-1 align-middle"><button type="button" class="btn btn-primary btn-sm" @click="$router.push({name: 'PlayerView', params: { id: player.id }})">Ver</button></td>
 						</tr>

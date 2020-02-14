@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="modal fade show"style="display: block;">
-			<div class="modal-dialog modal-sm modal-dialog-centered">
+			<div class="modal-dialog modal-dialog-centered">
 				<form class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">Editar tarifa</h5>
@@ -10,32 +10,29 @@
 					</div>
 					<div class="modal-body">
 						<div class="row">
-							<div class="form-group col-md-6">
-								<label>Año de nacimiento</label>
-								<select class="custom-select" v-model="model.year">
-									<option v-for="opt in years" :value="opt">{{opt}}</option>
-								</select>
-							</div>
-							<div class="form-group col-md-6">
+							<div class="form-group col-md-4">
 								<label>Actividad</label>
 								<select class="custom-select" v-model="model.sport">
 									<option value="RUGBY">RUGBY</option>
 									<option value="HOCKEY">HOCKEY</option>
 								</select>
 							</div>
-							<div class="form-group col-md-6">
+							<div class="form-group col-md-4">
 								<label>Categoria</label>
 								<input type="text" class="form-control" v-model="model.categ">
 							</div>
-							<div class="form-group col-md-6">
+							<div class="form-group col-md-4">
 								<label>Valor</label>
-								<input type="text" class="form-control" v-model="model.value">
+								<div class="input-icon">
+									<span class="input-icon-addon">$</span>
+									<cleave v-model="model.value" :options="{ numeral: true, numeralThousandsGroupStyle: 'thousand' }" class="form-control"/>
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click.prevent="close">Cerrar</button>
-						<button type="button" class="btn btn-primary" @click.prevent="save">Guardar</button>
+						<button type="button" class="btn btn-secondary btn-sm" @click.prevent="close">Cerrar</button>
+						<button type="button" class="btn btn-primary btn-sm" @click.prevent="save">Guardar</button>
 					</div>
 				</form>
 			</div>
@@ -45,8 +42,10 @@
 </template>
 
 <script>
+	import Cleave from 'vue-cleave-component'
 
 	export default	{
+		components: { Cleave },
 		beforeCreate() {
 		},
 		data() {

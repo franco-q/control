@@ -31,8 +31,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click="close">Cerrar</button>
-						<button type="button" class="btn btn-primary" @click="save">Guardar</button>
+						<button type="button" class="btn btn-secondary btn-sm" @click="close">Cerrar</button>
+						<button type="button" class="btn btn-primary btn-sm" @click="save">Guardar</button>
 					</div>
 				</form>
 			</div>

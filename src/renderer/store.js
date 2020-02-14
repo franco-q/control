@@ -54,6 +54,9 @@ var Store = new Vuex.Store({
 
 	},
 	mutations: {
+		LOADING(state, payload) {
+			state.loading = payload
+		},
 		SET_PLAYERS(state, payload) {
 			state.players = payload
 		},
@@ -210,7 +213,8 @@ var Store = new Vuex.Store({
 				})
 			})
 		},
-		GET_PLAYER_DATA(self, id) {
+		GET_PLAYER_DATA({ commit }, id) {
+			commit('LOADING', true)
 			return new Promise((resolve, reject) => {
 				db.query('SELECT * FROM players WHERE id = ? LIMIT 1', id, (err, [player]) => {
 					if (err) {
@@ -258,6 +262,7 @@ var Store = new Vuex.Store({
 								handleError(err, reject)
 							}
 							else {
+								commit('LOADING', false)
 								resolve({ ...player, rates })
 							}
 						})

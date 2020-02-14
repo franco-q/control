@@ -5,7 +5,6 @@
 				<table class="table table-hover">
 					<thead class="thead-light">
 						<tr>
-							<th scope="col">Año</th>
 							<th class="text-center" scope="col">Categoria</th>
 							<th class="text-center" scope="col">Actividad</th>
 							<th class="text-center" scope="col">Valor</th>
@@ -14,10 +13,9 @@
 					</thead>
 					<tbody>
 						<tr v-for="fee in fees">
-							<td class="py-1 align-middle">{{fee.year}}</td>
 							<td class="py-1 align-middle text-center">{{fee.categ}}</td>
 							<td class="py-1 align-middle text-center">{{fee.sport}}</td>
-							<td class="py-1 align-middle text-center">{{fee.value}}</td>
+							<td class="py-1 align-middle text-center"><strong>$ {{fee.value}}</strong></td>
 							<td class="py-1 align-middle text-right"><button type="button" class="btn btn-primary btn-sm" @click="$router.push({name: 'FeeEdit', params: { id: fee.id }})">Editar</button></td>
 						</tr>
 					</tbody>
