@@ -15,11 +15,11 @@
 						<dd>{{player.born_date.toLocaleDateString()}}</dd>
 						</template>
 						<dt>Telefonos</dt>
-						<dd>{{[player.tel_1, player.tel_2].join(', ')}}</dd>
+						<dd>{{[player.tel_1, player.tel_2].filter(x => x).join(', ')}}</dd>
 						<dt>Dirección</dt>
-						<dd>{{player.address}}, <b class="text-muted">{{player.city}}</b></dd>
-						<dt>Dirección</dt>
-						<dd>{{player.os_name}}<b class="text-muted d-block">{{player.os_num}}</b></dd>
+						<dd>{{player.address}} <b class="text-muted">{{player.city}}</b></dd>
+						<dt>Obra Social</dt>
+						<dd>{{player.os_name}} <b class="text-muted d-block">{{player.os_num}}</b></dd>
 					</dl>
 					<div class="alert mb-2 alert-success" v-if="player.authorized">
 						<h6 class="alert-heading">Autorizado a jugar en una categoria superior.</h6>
@@ -40,14 +40,15 @@
 							<p class="card-text">{{player.courses}}</p>
 						</div>
 					</div>
-					<button v-if="$route.name == 'PlayerView'" class="btn btn-sm btn-primary" @click.prevent="$router.push({name: 'PlayerEdit', params: {id: player.id }})">Editar</button>
+					<button class="btn btn-sm btn-primary" @click.prevent="$router.push({name: 'PlayerEdit', params: {id: player.id }})">Editar</button>
+					<button class="btn btn-sm btn-primary" @click.prevent="$router.push({name: 'newPlayerNote', params: {id: player.id }})">Agregar nota</button>
 				</div>
 			</div>
 			<div class="col-md-8">
 				<div class="card mb-2">
 					<div class="card-body">
 						<h5 class="card-title">Tarifario</h5>
-						<a href="#" class="btn btn-sm btn-primary" @click.prevent="$router.push({name: 'NewRateForm', params: { id: player.id }})">Agregar Subscripción</a>
+						<a href="#" class="btn btn-sm btn-primary" @click.prevent="$router.push({name: 'NewRateForm', params: { id: player.id }})">Agregar item</a>
 						<div class="text-nowrap table-responsive mt-2 border-top">
 							<table class="table table-sm table-borderless m-0">
 								<thead>
@@ -79,7 +80,7 @@
 									</tr>
 									<tr class="border-top" v-if="player.fee">
 										<td colspan="3">Total</td>
-										<td class="text-left"><strong>$ {{(player.rates||[]).reduce((a,b) => a + parseInt(b.value), player.fee.value)}}</strong></td>
+										<td class="text-left"><strong>$ {{(player.rates||[]).reduce((a,b) => a + parseInt(b.value), player.fee ? player.fee.value : 0)}}</strong></td>
 										<td>&nbsp;</td>
 									</tr>
 								</tbody>
@@ -215,6 +216,7 @@
 </template>
 
 <script>
+	var theMonths = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 	export default {
 		data() {
 			return {

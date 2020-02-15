@@ -1,86 +1,89 @@
 <template>
-	<div class="row">
-		<form class="container" @submit.prevent="submit">
-			<div class="row">
-				<div class="form-group col-md-3">
-					<label>Apellido</label>
-					<input type="text" class="form-control" v-model="lastname">
-				</div>
-				<div class="form-group col-md-3">
-					<label>Nombre</label>
-					<input type="text" class="form-control" v-model="name">
-				</div>
-				<div class="form-group col-md-3">
-					<label>Identificación</label>
-					<div class="input-group">
-						<select class="custom-select" v-model="doc_type">
-							<option value="DNI">DNI</option>
-							<option value="OTRO">OTRO</option>
-						</select>
-						<input type="text" class="form-control" v-model="doc_num">
+	<div>
+		<nav class="navbar fixed-top flex-md-nowrap p-0 shadow w-100">
+			<div class="col-md-2 mr-0 d-none d-sm-block p-1">
+				<router-link :to="{name: 'PlayerView', params: { id: $route.params.id }}" class="btn btn-block"><i class="fe fe-arrow-left mr-2"></i>Volver</router-link>
+			</div>
+		</nav>
+		<div class="row">
+			<form class="container" @submit.prevent="submit">
+				<div class="row">
+					<div class="form-group col-md-3">
+						<label>Apellido</label>
+						<input type="text" class="form-control" v-model="lastname">
 					</div>
-				</div>
-				<div class="form-group col-md-3">
-					<label>Fecha de nacimiento</label>
-					<v-date-picker ref="date" mode="single" v-model="born_date" :input-props="{class: 'form-control'}" :disabled-dates="{start : new Date()}"></v-date-picker>
-				</div>
-				<div class="form-group col-md-3">
-					<label class="d-block">Sexo</label>
-					<div class="custom-control custom-radio custom-control-inline">
-						<input type="radio" id="gengre_F" class="custom-control-input" value="F" v-model="gengre" />
-						<label class="custom-control-label" for="gengre_F">Mujer</label>
+					<div class="form-group col-md-3">
+						<label>Nombre</label>
+						<input type="text" class="form-control" v-model="name">
 					</div>
-					<div class="custom-control custom-radio custom-control-inline">
-						<input type="radio" id="gengre_M" class="custom-control-input" value="M" v-model="gengre" />
-						<label class="custom-control-label" for="gengre_M">Hombre</label>
+					<div class="form-group col-md-3">
+						<label>Identificación</label>
+						<div class="input-group">
+							<select class="custom-select" v-model="doc_type">
+								<option value="DNI">DNI</option>
+								<option value="OTRO">OTRO</option>
+							</select>
+							<input type="text" class="form-control" v-model="doc_num">
+						</div>
 					</div>
-				</div>
-				<div class="form-group col-md-3">
-					<label>Email</label>
-					<input type="text" class="form-control" v-model="email">
-				</div>
-				<div class="form-group col-md-3">
-					<label>Dirección</label>
-					<input type="text" class="form-control" v-model="address">
-				</div>
-				<div class="form-group col-md-3">
-					<label>Ciudad</label>
-					<input type="text" class="form-control" v-model="city">
-				</div>
-				<div class="form-group col-md-3">
-					<label>Telefono</label>
-					<input type="text" class="form-control" v-model="tel_1">
-				</div>
-				<div class="form-group col-md-3">
-					<label>Telefono alternativo</label>
-					<input type="text" class="form-control" v-model="tel_2">
-				</div>
-				<div class="form-group col-md-4">
-					<label>Autorizado</label>
-					<v-date-picker ref="date" mode="single" v-model="authorized" :input-props="{class: 'form-control w-auto	'}" :disabled-dates="{start : new Date()}"></v-date-picker>
-				</div>
-				<div class="form-group col-md-6">
-					<label>Obra Social</label>
-					<div class="input-group">
-						<div class="input-group-prepend">
-							<div class="input-group-text">
-								<div class="custom-control custom-switch">
-									<input type="checkbox" class="custom-control-input" id="customSwitch1" v-model="os.active"/>
-									<label class="custom-control-label" for="customSwitch1">{{os.active ? 'SI' : 'NO'}}</label>
+					<div class="form-group col-md-3">
+						<label>Fecha de nacimiento</label>
+						<v-date-picker ref="date" mode="single" v-model="born_date" :input-props="{class: 'form-control'}" :disabled-dates="{start : new Date()}"></v-date-picker>
+					</div>
+					<div class="form-group col-md-3">
+						<label class="d-block">Sexo</label>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="gengre_F" class="custom-control-input" value="F" v-model="gengre" />
+							<label class="custom-control-label" for="gengre_F">Mujer</label>
+						</div>
+						<div class="custom-control custom-radio custom-control-inline">
+							<input type="radio" id="gengre_M" class="custom-control-input" value="M" v-model="gengre" />
+							<label class="custom-control-label" for="gengre_M">Hombre</label>
+						</div>
+					</div>
+					<div class="form-group col-md-3">
+						<label>Email</label>
+						<input type="text" class="form-control" v-model="email">
+					</div>
+					<div class="form-group col-md-3">
+						<label>Dirección</label>
+						<input type="text" class="form-control" v-model="address">
+					</div>
+					<div class="form-group col-md-3">
+						<label>Ciudad</label>
+						<input type="text" class="form-control" v-model="city">
+					</div>
+					<div class="form-group col-md-3">
+						<label>Telefono</label>
+						<input type="text" class="form-control" v-model="tel_1">
+					</div>
+					<div class="form-group col-md-3">
+						<label>Telefono alternativo</label>
+						<input type="text" class="form-control" v-model="tel_2">
+					</div>
+					<div class="form-group col-md-4">
+						<label>Autorizado</label>
+						<v-date-picker ref="date" mode="single" v-model="authorized" :input-props="{class: 'form-control w-auto	'}" :disabled-dates="{start : new Date()}"></v-date-picker>
+					</div>
+					<div class="form-group col-md-6">
+						<label>Obra Social</label>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<div class="input-group-text">
+									<div class="custom-control custom-switch">
+										<input type="checkbox" class="custom-control-input" id="customSwitch1" v-model="os.active"/>
+										<label class="custom-control-label" for="customSwitch1">{{os.active ? 'SI' : 'NO'}}</label>
+									</div>
 								</div>
 							</div>
+							<input type="text" class="form-control" :disabled="!os.active" v-model="os.name">
+							<input type="text" class="form-control" :disabled="!os.active" v-model="os.num">
 						</div>
-						<input type="text" class="form-control" :disabled="!os.active" v-model="os.name">
-						<input type="text" class="form-control" :disabled="!os.active" v-model="os.num">
 					</div>
 				</div>
-				<div class="form-group col-12">
-					<label for="exampleFormControlTextarea1">Notas</label>
-					<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="resize: none;" v-model="notes"></textarea>
-				</div>
-			</div>
-			<button class="btn btn-primary" type="submit">Guardar</button>
-		</form>
+				<button class="btn btn-primary" type="submit">Guardar</button>
+			</form>
+		</div>
 	</div>
 </template>
 

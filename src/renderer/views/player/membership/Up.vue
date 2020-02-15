@@ -8,6 +8,7 @@
 						<button type="button" class="close" @click="close">
 							<span>&times;</span>
 						</button>
+						<button type="button" class="close" @click="close">&nbsp;</button>
 					</div>
 					<div class="modal-body">
 						<div class="row">
@@ -30,8 +31,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click="close">Cerrar</button>
-						<button type="button" class="btn btn-primary" @click="save">Guardar</button>
+						<button type="button" class="btn btn-secondary btn-sm" @click="close">Cerrar</button>
+						<button type="button" class="btn btn-primary btn-sm" @click="save">Guardar</button>
 					</div>
 				</form>
 			</div>

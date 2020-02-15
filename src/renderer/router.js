@@ -32,6 +32,10 @@ export default new Router({
 			})
 		},
 		children: [{
+			path: 'notes/new',
+			name: 'newPlayerNote',
+			component: () => import('./views/player/notes/New')
+		},{
 			path: 'membership/new',
 			name: 'UpMembershipForm',
 			component: () => import('./views/player/membership/Up')

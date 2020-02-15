@@ -24,8 +24,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click.prevent="close">Cerrar</button>
-						<button type="button" class="btn btn-primary" @click.prevent="save">Guardar</button>
+						<button type="button" class="btn btn-secondary btn-sm" @click.prevent="close">Cerrar</button>
+						<button type="button" class="btn btn-primary btn-sm" @click.prevent="save">Guardar</button>
 					</div>
 				</form>
 			</div>

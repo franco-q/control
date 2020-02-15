@@ -1,5 +1,4 @@
 <template>
-	<div class="pb-2 mb-3">
 		<nav class="navbar fixed-top flex-md-nowrap p-0 shadow w-100">
 			<div class="col-md-2 mr-0 d-none d-sm-block p-1">
 				<router-link :to="{name: 'CreatePlayer'}" class="btn btn-block"><i class="fe fe-edit mr-2"></i>Nuevo</router-link>
