@@ -71,13 +71,13 @@
 											<td class="text-right"><button type="button" class="btn btn-secondary btn-sm" @click.prevent="$router.push({name: 'EditRateForm', params: { id: player.id, rate: item.id }})">Editar</button></td>
 										</tr>
 									</template>
-									<tr class="border-top">
+									<tr class="border-top" v-if="player.fee">
 										<td colspan="2">Cuota</td>
 										<td>{{player.fee.sport}} {{player.fee.categ}}</td>
 										<td class="text-left"><strong>$ {{player.fee.value}}</strong></td>
 										<td>&nbsp;</td>
 									</tr>
-									<tr class="border-top">
+									<tr class="border-top" v-if="player.fee">
 										<td colspan="3">Total</td>
 										<td class="text-left"><strong>$ {{(player.rates||[]).reduce((a,b) => a + parseInt(b.value), player.fee.value)}}</strong></td>
 										<td>&nbsp;</td>
