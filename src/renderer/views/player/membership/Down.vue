@@ -11,6 +11,12 @@
 					<div class="modal-body">
 						<div class="row">
 							<div class="form-group col-md-6">
+								<label>Fecha de Alta</label>
+								<div class="form-control-plaintext">
+									<strong>{{membership.date_up.toLocaleDateString()}}</strong>
+								</div>
+							</div>
+							<div class="form-group col-md-6">
 								<label>Fecha de Baja</label>
 								<v-date-picker ref="date" mode="single" v-model="membership.date_down" :input-props="{class: 'form-control'}" :disabled-dates="{start : new Date()}"></v-date-picker>
 							</div>
@@ -21,8 +27,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click.prevent="close">Cerrar</button>
-						<button type="button" class="btn btn-primary" @click.prevent="save">Guardar</button>
+						<button type="button" class="btn btn-sm btn-secondary" @click.prevent="close">Cerrar</button>
+						<button type="button" class="btn btn-sm btn-primary" @click.prevent="save">Guardar</button>
 					</div>
 				</form>
 			</div>
@@ -35,7 +41,7 @@
 	export default	{
 		data() {
 			return {
-				membership: (this.$parent.player.memberships || []).find(m => m.id == this.$route.params.membership) || { date_down: null, notes: null }
+				membership: Object.assign({ date_down: null, notes: null, date_up: null }, this.$store.state.memberships.find(m => m.id == this.$route.params.membership))
 			}
 		},
 		methods: {

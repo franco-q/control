@@ -11,8 +11,14 @@
 					<div class="modal-body">
 						<div class="row">
 							<div class="form-group col-md-6">
+								<label>Fecha de Alta</label>
+								<div class="form-control-plaintext">
+									<strong>{{subscription.date_up.toLocaleDateString()}}</strong>
+								</div>
+							</div>
+							<div class="form-group col-md-6">
 								<label>Fecha de Baja</label>
-								<v-date-picker ref="date" mode="single" v-model="subscription.date_down" :input-props="{class: 'form-control'}" :disabled-dates="{start : new Date()}"></v-date-picker>
+								<v-date-picker ref="date" mode="single" v-model="subscription.date_down" :input-props="{ class: 'form-control', readonly: 1 }"/>
 							</div>
 							<div class="form-group col-12">
 								<label for="exampleFormControlTextarea1">Notas</label>
@@ -21,8 +27,8 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" @click.prevent="close">Cerrar</button>
-						<button type="button" class="btn btn-primary" @click.prevent="save">Guardar</button>
+						<button type="button" class="btn btn-sm btn-secondary" @click.prevent="close">Cerrar</button>
+						<button type="button" class="btn btn-sm btn-primary" @click.prevent="save">Guardar</button>
 					</div>
 				</form>
 			</div>
@@ -35,7 +41,7 @@
 	export default	{
 		data() {
 			return {
-				subscription: (this.$parent.player.subscriptions || []).find(m => m.id == this.$route.params.subscription) || { date_down: null, notes: null }
+				subscription: Object.assign({ date_down: null, notes: null, date_up: null }, this.$store.state.subscriptions.find(m => m.id == this.$route.params.subscription))
 			}
 		},
 		methods: {

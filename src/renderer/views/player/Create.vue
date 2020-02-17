@@ -1,5 +1,5 @@
 <template>
-	<div class="row">
+	<div class="row mb-3">
 		<form class="container" @submit.prevent="submit">
 			<div class="row">
 				<div class="form-group col-md-3">
@@ -75,7 +75,8 @@
 					<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="resize: none;" v-model="notes"></textarea>
 				</div>
 			</div>
-			<button class="btn btn-primary" type="submit">Guardar</button>
+			<button class="btn btn-sm btn-primary">Guardar</button>
+			<button class="btn btn-sm btn-secondary" @click.prevent="$router.push({ name: 'PlayersList' })">Cancelar</button>
 		</form>
 	</div>
 </template>

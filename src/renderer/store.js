@@ -6,32 +6,20 @@ import router from './router'
 
 Vue.use(Vuex)
 
-const db = mysql.createConnection({
-	host: 'remotemysql.com',
-	user: 'tkrs9qZdK0',
-	password: 'kuRj1f8xbO',
-	database: 'tkrs9qZdK0'
-})
+const db = mysql.createConnection({ host: 'localhost', user: 'root', password: '', database: 'tkrs9qZdK0' })
 
-db.connect(function(err) {
-    if (err) {
-    	throw err
-    }
-    console.log('connected!')
-})
+db.connect(err => err && sa({ title: 'No hay coneccion a la BBDD', text: err.message, icon: 'error', buttons: false, dangerMode: true, closeOnClickOutside: false }))
 
 var handleError = (err, reject) => {
-	// sa(err.sqlMessage, err.code, 'error')
+	sa(err.sqlMessage, err.code, 'error')
 	console.log([err])
 	reject(err)
 }
 
 var query = q => new Promise((resolve, reject) => {
 	db.query(q, (err, res) => {
-		console.log(err, res)
-
 		if (err) {
-			// sa(err.sqlMessage, err.code, 'error')
+			sa(err.sqlMessage, err.code, 'error')
 			console.log([err])
 			reject(err)
 		}
@@ -48,7 +36,12 @@ var Store = new Vuex.Store({
 		fees: [],
 		debits: [],
 		invoices: [],
-		expenses: []
+		expenses: [],
+		subscriptions: [],
+		notes: [],
+		memberships: [],
+		signings: [],
+		rates: []
 	},
 	getters: {
 
@@ -63,6 +56,9 @@ var Store = new Vuex.Store({
 		SET_FEES(state, payload) {
 			state.fees = payload
 		},
+		SET_DUES(state, payload) {
+			state.dues = payload
+		},
 		SET_DEBITS(state, payload) {
 			state.debits = payload
 		},
@@ -71,9 +67,52 @@ var Store = new Vuex.Store({
 		},
 		SET_EXPENSES(state, payload) {
 			state.expenses = payload
+		},
+		SET_SUBSCRIPTIONS(state, payload) {
+			state.subscriptions = payload
+		},
+		SET_NOTES(state, payload) {
+			state.notes = payload
+		},
+		SET_MEMBERSHIPS(state, payload) {
+			state.memberships = payload
+		},
+		SET_SIGNINGS(state, payload) {
+			state.signings = payload
+		},
+		SET_RATES(state, payload) {
+			state.rates = payload
+		},
+		SET_PLAYERS_FEES(state, payload) {
+			state.players_fees = payload.map(({ id, player_id, fee_id }) => ({
+				player: state.players.find(p => p.id == player_id),
+				fee: state.fees.find(f => f.id == fee_id)
+			}))
 		}
 	},
 	actions: {
+		INIT({ state, commit }) {
+			commit('LOADING', true)
+			return new Promise((resolve, reject) => {
+				query('CALL `init`()').then(([players, fees, dues, debits, invoices, expenses, subscriptions, notes, memberships, signings, rates, players_fees]) => {
+					commit('SET_PLAYERS', players)
+					commit('SET_FEES', fees)
+					commit('SET_DUES', dues)
+					commit('SET_DEBITS', debits)
+					commit('SET_INVOICES', invoices)
+					commit('SET_EXPENSES', expenses)
+					commit('SET_SUBSCRIPTIONS', subscriptions)
+					commit('SET_NOTES', notes)
+					commit('SET_MEMBERSHIPS', memberships)
+					commit('SET_SIGNINGS', signings)
+					commit('SET_RATES', rates)
+					commit('SET_PLAYERS_FEES', players_fees)
+ 				})
+ 				.catch(reject)
+ 				.then(resolve)
+ 				.finally(() => commit('LOADING', false))
+			})
+		},
 		UPDATE_RATE_PLAYER({ state, commit }, { id, data }) {
 			return new Promise((resolve, reject) => {
 				query(mysql.format('UPDATE rates SET ? WHERE id = ?', [data, id])).then(resolve).catch(reject)
@@ -220,7 +259,7 @@ var Store = new Vuex.Store({
 					if (err) {
 						handleError(err, reject)
 					}
-					else {
+					else if (player) {
 						db.query('SELECT * FROM fees WHERE id = ? OR (sport = ? AND year = ?) OR (sport = ? AND categ = "PS") LIMIT 1', [player.fee_id, player.sport, player.year, player.sport], (err, [fee]) => {
 							if (err) {
 								handleError(err, reject)
@@ -262,25 +301,17 @@ var Store = new Vuex.Store({
 								handleError(err, reject)
 							}
 							else {
-								commit('LOADING', false)
 								resolve({ ...player, rates })
 							}
 						})
 					}
+					commit('LOADING', false)
 				})
 			})
 		},
 		SELECT_PLAYERS({ commit }) {
-			return new Promise((resolve, reject) => {
-				db.query('SELECT * FROM players', (err, res) => {
-					if (err) {
-						handleError(err, reject)
-					}
-					else {
-						commit('SET_PLAYERS', res)
-						resolve(res)
-					}
-				})
+			query('SELECT * FROM players').then(res => {
+				commit('SET_PLAYERS', res)
 			})
 		},
 		CREATE_PLAYER({ dispatch }, payload) {
@@ -299,13 +330,13 @@ var Store = new Vuex.Store({
 		},
 		UPDATE_PLAYER({ state, commit }, { id, data }) {
 			return new Promise((resolve, reject) => {
-				db.query('UPDATE players SET ? WHERE id = ?', [data, id], (err, signings) => {
+				db.query('UPDATE players SET ? WHERE id = ?', [data, id], err => {
 					if (err) {
 						handleError(err, reject)
 					}
 					else {
 						sa('Guardado con exito', 'Se actualizo el registro en la tabla jugadores', 'success')
-						commit('SET_PLAYERS', state.players.map(p => p.id == id ? { ...p, signings } : p))
+						resolve()
 					}
 				})
 			})
@@ -553,6 +584,13 @@ var Store = new Vuex.Store({
 						}
 					})
 				})
+			})
+		},
+		SELECT_SUBSCRIPTIONS({ state, commit }) {
+			commit('LOADING', true)
+			query('SELECT S.*, P.name, P.lastname, P.doc_num FROM subscriptions S INNER JOIN players P ON P.id = S.player_id').then(res => {
+				commit('LOADING', false)
+				commit('SET_SUBSCRIPTIONS', res)
 			})
 		}
 	},

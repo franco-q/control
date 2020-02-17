@@ -6,13 +6,17 @@ import VCalendar from 'v-calendar'
 
 Vue.use(VCalendar, { firstDayOfWeek: 2 })
 
-if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
+if (!process.env.IS_WEB) {
+	Vue.use(require('vue-electron'))
+}
+
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
-new Vue({
-  components: { App },
-  store,
-  router,
-  template: '<App/>'
-}).$mount('#app')
+var vm = new Vue({
+	components: { App },
+	store,
+	router,
+	template: '<App/>'
+})
+
+store.dispatch('INIT').then(() => vm.$mount('#app'))

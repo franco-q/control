@@ -11,7 +11,7 @@
 						<div class="row">
 							<div class="form-group col-md-6">
 								<label>Fecha de alta</label>
-								<v-date-picker ref="date" mode="single" v-model="date_up" :input-props="{class: 'form-control'}" />
+								<v-date-picker ref="date" mode="single" v-model="date_up" :input-props="{ class: 'form-control', readonly: 1 }" />
 							</div>
 							<div class="form-group col-md-6">
 								<label>Metodo de pago</label>
@@ -52,7 +52,7 @@
 								</div>
 							</div>
 							<div class="form-group col-12">
-								<label for="exampleFormControlTextarea1">Notas</label>
+								<label for="exampleFormControlTextarea1">Observación</label>
 								<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" style="resize: none;" v-model="notes"></textarea>
 							</div>
 						</div>

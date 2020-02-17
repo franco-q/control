@@ -23,7 +23,7 @@
 							</div>
 							<div class="form-group col-md-4">
 								<label>Mes</label>
-								<select class="custom-select" v-model="model.month">
+								<select class="custom-select" v-model="model.months">
 									<option v-for="(month, k) in months" :value="k">{{month}}</option>
 								</select>
 							</div>
@@ -33,6 +33,12 @@
 									<span class="input-icon-addon">$</span>
 									<cleave v-model="model.value" :options="{ numeral: true, numeralThousandsGroupStyle: 'thousand' }" class="form-control"/>
 								</div>
+							</div>
+							<div class="col-12 tags">
+								<span class="tag">
+									<span></span>
+									<a href="javascript:void(0)" class="tag-addon"><i class="fe fe-x"></i></a>
+								</span>
 							</div>
 						</div>
 					</div>
@@ -58,7 +64,7 @@
 			var year = (d => d.getFullYear())(new Date())
 			return {
 				months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-				model: Object.assign({ year: null, title: null, sport: null, month: null, value: null }, this.$store.state.fees.find(f => f.id == this.$route.params.id)),
+				model: Object.assign({ year: null, title: null, sport: null, month: null, value: null, months: [] }, this.$store.state.fees.find(f => f.id == this.$route.params.id)),
 				years: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].reduce((e, t, n, s) => e.concat(s.map(e => t + '' + e)), []).filter(e => e <= 80).map(e => year - e)
 			}
 		},

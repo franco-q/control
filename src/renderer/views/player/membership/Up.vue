@@ -5,9 +5,6 @@
 				<form class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title">Agregar membresia</h5>
-						<button type="button" class="close" @click="close">
-							<span>&times;</span>
-						</button>
 						<button type="button" class="close" @click="close">&nbsp;</button>
 					</div>
 					<div class="modal-body">
@@ -42,16 +39,16 @@
 </template>
 
 <script>
-	export default	{
-		data: () => ({ date_up: null, notes: null, type: null }),
+export default {
+	data: () => ({ date_up: null, notes: null, type: null }),
 
-		methods: {
-			save() {
-				this.$store.dispatch('UP_MEMBERSHIP_PLAYER', { ...this.$data, player_id: this.$route.params.id }).finally(this.close)
-			},
-			close() {
-				this.$router.push({ name: 'PlayerView', params: { id: this.$route.params.id } })
-			}
+	methods: {
+		save() {
+			this.$store.dispatch('UP_MEMBERSHIP_PLAYER', { ...this.$data, player_id: this.$route.params.id }).finally(this.close)
+		},
+		close() {
+			this.$router.push({ name: 'PlayerView', params: { id: this.$route.params.id } })
 		}
 	}
+}
 </script>

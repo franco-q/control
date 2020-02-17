@@ -5,7 +5,13 @@ import store from './store'
 Vue.use(Router)
 
 export default new Router({
-	routes: [{
+	routes: [
+	{
+		path: '/',
+		name: 'Home',
+		component: () => import('./views/home/Index')
+	},
+	{
 		path: '/players',
 		name: 'PlayersList',
 		component: () => import('./views/player/List')
@@ -24,18 +30,12 @@ export default new Router({
 		path: '/players/:id',
 		name: 'PlayerView',
 		component: () => import('./views/player/View'),
-		beforeEnter: (to, from, next) => {
-			store.dispatch('GET_PLAYER_DATA', to.params.id)
-			.then(data => {
-				store.commit('SET_PLAYERS', store.state.players.filter(p => p.id != data.id).concat([data]))
-				next()
-			})
-		},
 		children: [{
 			path: 'notes/new',
 			name: 'newPlayerNote',
 			component: () => import('./views/player/notes/New')
-		},{
+		},
+		{
 			path: 'membership/new',
 			name: 'UpMembershipForm',
 			component: () => import('./views/player/membership/Up')
@@ -77,13 +77,18 @@ export default new Router({
 		}]
 	},
 	{
-		path: '/fees',
-		name: 'FeeList',
-		component: () => import('./views/fees/List'),
+		path: '/dues',
+		name: 'DueList',
+		component: () => import('./views/dues/List'),
 		children: [{
 			path: ':id/edit',
-			name: 'FeeEdit',
-			component: () => import('./views/fees/Edit')
+			name: 'DueEdit',
+			component: () => import('./views/dues/Edit')
+		},
+		{
+			path: 'create',
+			name: 'CreateDue',
+			component: () => import('./views/dues/Create')
 		}]
 	},
 	{
@@ -92,12 +97,14 @@ export default new Router({
 		component: () => import('./views/debit/List')
 	},
 	{
+		path: '/subscriptions',
+		name: 'SubscriptionList',
+		component: () => import('./views/subscriptions/List')
+	},
+	{
 		path: '/',
 		name: 'InvoiceList',
 		component: () => import('./views/invoices/List'),
-		beforeEnter: (to, from, next) => {
-			store.dispatch('SELECT_INVOICES').then(next)
-		},
 		children: [{
 			path: '/invoices/:invoice/due/:due/edit',
 			name: 'InvoiceDueEdit',
@@ -128,5 +135,10 @@ export default new Router({
 		path: '/expenses/:id/edit',
 		name: 'ExpenseEdit',
 		component: () => import('./views/expenses/Edit')
+	},
+	{
+		path: '/notes',
+		name: 'NoteList',
+		component: () => import('./views/notes/List')
 	}]
 })
